@@ -1,17 +1,31 @@
-# Flexible Conctruction-Step Allocation System
+# =================================================
+#  Flexible 4D simulation system for Archicad（仮）
+#  ver.Beta1 2023/06/04
+# =================================================
 
 import os
+import sys
 import subprocess
 import xml.etree.ElementTree as ET
 import configparser
 import shutil
 
+def get_dir_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+        print("[Base Path (get from sys)]" + base_path)
+    except Exception:
+        base_path = os.path.dirname(__file__)
+        print("[Base Path (get from sys)]" + base_path)
+    return base_path
+
+
 # ファイルパスを見つける。HsfとConvertedフォルダを空にして再生成
-def find_folder_path(ini):
+def find_folder_path(ini,currentpath):
     converterPath = ini['converterPath']['Path']
-    srcDir = os.path.dirname(os.path.abspath(__file__)) + "/Binary"
-    outDir = os.path.dirname(os.path.abspath(__file__)) + "/Hsf"
-    cnvDir = os.path.dirname(os.path.abspath(__file__)) + "/Converted"
+    srcDir = currentpath + "/Binary"
+    outDir = currentpath + "/Hsf"
+    cnvDir = currentpath + "/Converted"
     
     shutil.rmtree(outDir)
     os.mkdir(outDir)
@@ -75,7 +89,6 @@ def rewrite_paramlist(ParamFile):
                     if i.tag == "Value":
                         tmp2 = int(i.text)
                 MaterialComb[tmp1] = tmp2
-    print(MaterialComb)
 
 
     ## WireSolid変数を追記
@@ -130,10 +143,8 @@ def rewrite_3d(ini,ThreeDFile,MaterialComb):
     CombMaterial = {}
 
     for i in range(99):
-        # print(ini['範囲No. = 材質インデックス'][str(i+1)])
         if ini['範囲No. = 材質インデックス'][str(i+1)] != "":
             CombMaterial[int(ini['範囲No. = 材質インデックス'][str(i+1)])] = i+1
-    print(CombMaterial)
 
     ## material表記のある行にWireSolidを追記
     with open(ThreeDFile, encoding="utf_8_sig", newline='') as f:
@@ -170,17 +181,20 @@ ini = configparser.ConfigParser()
 ini.read('config.ini', 'UTF-8')
 
 cnt = 0
+
+currentpath = get_dir_path(sys.argv[0])
 # ファイル検索
-converterPath , srcDir , outDir , cnvDir , gsmfiles = find_folder_path(ini)
+converterPath , srcDir , outDir , cnvDir , gsmfiles = find_folder_path(ini,currentpath)
 
 # GSM to HSF
 command = "l2hsf"
 result = subprocess.run([converterPath, command, srcDir, outDir])
 
-# [WIP]回数をファイル数から
-for cnt in range(1):
+
+BinaryDirNum = sum(os.path.isfile(os.path.join(srcDir,name)) for name in os.listdir(srcDir))
+
+for cnt in range(BinaryDirNum):
     gsmfile , ParamFile , ThreeDFile , LibpartdataFile , ScriptDir = find_file_path(cnt,outDir,gsmfiles)
-    print(gsmfile)
     # iniファイル連動
     FileRange = filename_to_index(ini,gsmfile)
 

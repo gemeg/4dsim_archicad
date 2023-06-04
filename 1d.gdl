@@ -1,0 +1,10 @@
+﻿DIM _refshowStepID[99]
+
+if isMVO then
+	success = LIBRARYGLOBAL ("StepMVO", "showStepIDtmp", _refshowStepID)
+	if success then
+		for i = 1 to 99
+			WireSolid[i] = _refshowStepID[i] : parameters WireSolid[i] = WireSolid[i]
+		next i
+	endif
+endif

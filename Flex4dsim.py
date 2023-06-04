@@ -9,6 +9,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 import configparser
 import shutil
+import glob
 
 def get_dir_path(relative_path):
     try:
@@ -33,9 +34,15 @@ def find_folder_path(ini,currentpath):
     shutil.rmtree(cnvDir)
     os.mkdir(cnvDir)
 
-    gsmfiles = os.listdir(srcDir)
 
-    return converterPath , srcDir , outDir , cnvDir , gsmfiles
+    tmps = glob.glob(srcDir + "/*.gsm")
+    gsmfiles =[]
+    cnt = 0
+    for gsmfile in tmps:
+        gs = os.path.basename(gsmfile)
+        gsmfiles.append(gs)
+        cnt = cnt + 1
+    return converterPath , srcDir , outDir , cnvDir , gsmfiles ,cnt
 
 def find_file_path(cnt,outDir,gsmfiles):
     gsmfile = os.path.splitext(gsmfiles[cnt])[0]
@@ -184,14 +191,14 @@ cnt = 0
 
 currentpath = get_dir_path(sys.argv[0])
 # ファイル検索
-converterPath , srcDir , outDir , cnvDir , gsmfiles = find_folder_path(ini,currentpath)
+converterPath , srcDir , outDir , cnvDir , gsmfiles, BinaryDirNum = find_folder_path(ini,currentpath)
 
 # GSM to HSF
 command = "l2hsf"
 result = subprocess.run([converterPath, command, srcDir, outDir])
 
 
-BinaryDirNum = sum(os.path.isfile(os.path.join(srcDir,name)) for name in os.listdir(srcDir))
+# BinaryDirNum = sum(os.path.isfile(os.path.join(srcDir,name)) for name in os.listdir(srcDir))
 
 for cnt in range(BinaryDirNum):
     gsmfile , ParamFile , ThreeDFile , LibpartdataFile , ScriptDir = find_file_path(cnt,outDir,gsmfiles)

@@ -11,16 +11,6 @@ import configparser
 import shutil
 import glob
 
-# def get_dir_path(relative_path):
-#     try:
-#         base_path = sys._MEIPASS
-#         print("[Base Path (get from sys)]" + base_path)
-#     except Exception:
-#         base_path = os.path.dirname(__file__)
-#         print("[Base Path (get from sys)]" + base_path)
-#         print("AAA")
-#     return base_path
-
 def get_dir_path(filename):
     if getattr(sys, "frozen", False):
         # The application is frozen

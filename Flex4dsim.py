@@ -11,15 +11,26 @@ import configparser
 import shutil
 import glob
 
-def get_dir_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-        print("[Base Path (get from sys)]" + base_path)
-    except Exception:
-        base_path = os.path.dirname(__file__)
-        print("[Base Path (get from sys)]" + base_path)
-    return base_path
+# def get_dir_path(relative_path):
+#     try:
+#         base_path = sys._MEIPASS
+#         print("[Base Path (get from sys)]" + base_path)
+#     except Exception:
+#         base_path = os.path.dirname(__file__)
+#         print("[Base Path (get from sys)]" + base_path)
+#         print("AAA")
+#     return base_path
 
+def get_dir_path(filename):
+    if getattr(sys, "frozen", False):
+        # The application is frozen
+        datadir = os.path.dirname(sys.executable)
+    else:
+        # The application is not frozen
+        # Change this bit to match where you store your data files:
+        datadir = os.path.dirname(__file__)
+    print(datadir)
+    return datadir
 
 # ファイルパスを見つける。HsfとConvertedフォルダを空にして再生成
 def find_folder_path(ini,currentpath):
@@ -221,3 +232,4 @@ for cnt in range(BinaryDirNum):
 command = "hsf2l"
 result = subprocess.run([converterPath, command, outDir, cnvDir])
 
+os.system('PAUSE')

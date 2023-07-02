@@ -28,7 +28,7 @@ pip install configparser
 
 # Usage
 
-BinaryフォルダにGSMファイルを保存しFlex4dsim.pyまたはFlex4dsim.exeを実行する。
+BinaryフォルダにGSMファイルを保存しFlex4dsim.pyを実行する。
 正常動作すればConvertedフォルダに変換された同名のGSMファイルが生成される。
 
 # Note
